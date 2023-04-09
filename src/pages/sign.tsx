@@ -1,20 +1,34 @@
+import UserContext from '../components/userContext';
+
+
+
 import Head from "next/head";
 import Image from "next/image";
 
 import axios from 'axios';
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useContext, useEffect, useState } from 'react'
 
 import { BsShieldLock,BsPerson } from 'react-icons/bs'
 import Link from "next/link";
+import { useRouter } from 'next/router';
 
 export default function Sign() {
   const [ email , setEmail] = useState<string>('')
   const [ password , setPassword] = useState<string>('')
+  const { user, setUser } = useContext(UserContext);
+  const router = useRouter()
+  useEffect(()=>{
+    if(user?.id){
+      router.push('/app')
+    }
+  },[router,user])
+  
   const handleSubmit = async (event:FormEvent<HTMLFormElement>) => {
     event.preventDefault();
       try {
         const response = await axios.post('/api/login', {email:email,password:password});
+        setUser({id:1,email:email})
         alert('You have logged in successfully')        
       } catch (error:any) {
         if(error.response.status === 404){
